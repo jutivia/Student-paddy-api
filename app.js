@@ -56,3 +56,30 @@ const start = async() => {
     }
 }
 start()
+
+
+// const getSmall = (arr) => {
+//   let biggest = 0
+//   for (let i = 0; i < arr.length; i++){
+//     if (arr[i]> biggest) biggest = arr[i]
+//   }
+//   let no = biggest
+//   for (let i = 0; i <biggest; i++){
+//     if (arr.includes(i) === false && i > 0){
+//       no = i
+//       break
+//     }
+//   }
+//   if( no === biggest){
+//       no = biggest + 1
+//   } else if (no <= 0) {
+//     no = 1
+//     }
+//   console.log(biggest, no)
+//   return no;
+// }
+// getSmall([1, 3, 6, 4, 1, 2])
+// getSmall([1, 2, 3]);
+// getSmall([-2, -3]);
+// getSmall([1, 2, 3, 0, -5, 9]);
+// getSmall([1, 2, 3, 0, -5, 4, 5, 6, 9])
