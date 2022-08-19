@@ -4,7 +4,7 @@ require('express-async-errors');
 const express = require('express');
 const app = express()
 const connectDb = require('./db/connect')
-// const authRoute = require('./routes/auth')
+const authRoute = require('./routes/auth')
 // const publicationRoute = require('./routes/publication')
 const notFound = require('./middleware/not-found')
 const errorHandler = require("./middleware/error-handler");
@@ -30,7 +30,7 @@ app.use(xss());
 
 
 app.use(express.json());
-// app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/auth", authRoute);
 // app.use("/api/v1/publications", [auth, publicationRoute])
 
 app.use(notFound, errorHandler);
@@ -56,30 +56,3 @@ const start = async() => {
     }
 }
 start()
-
-
-// const getSmall = (arr) => {
-//   let biggest = 0
-//   for (let i = 0; i < arr.length; i++){
-//     if (arr[i]> biggest) biggest = arr[i]
-//   }
-//   let no = biggest
-//   for (let i = 0; i <biggest; i++){
-//     if (arr.includes(i) === false && i > 0){
-//       no = i
-//       break
-//     }
-//   }
-//   if( no === biggest){
-//       no = biggest + 1
-//   } else if (no <= 0) {
-//     no = 1
-//     }
-//   console.log(biggest, no)
-//   return no;
-// }
-// getSmall([1, 3, 6, 4, 1, 2])
-// getSmall([1, 2, 3]);
-// getSmall([-2, -3]);
-// getSmall([1, 2, 3, 0, -5, 9]);
-// getSmall([1, 2, 3, 0, -5, 4, 5, 6, 9])
