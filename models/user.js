@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    img: String,
     country: {
       type: String,
       required: [true, "Kindly enter a country"],
@@ -70,10 +71,7 @@ const UserSchema = new mongoose.Schema(
       type: Number,
     },
     communitiesFollowed: [
-      {
-        id: mongoose.Types.ObjectId,
-        name: String,
-      },
+        mongoose.Types.ObjectId,
     ],
   },
   { timestamps: true }

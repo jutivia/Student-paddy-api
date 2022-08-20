@@ -3,7 +3,7 @@ const CommunitySchema = new mongoose.Schema({
   name: {
     type: String,
         required: [true, "Provide a community name"],
-    unique: true,
+    unique: true
   },
   about: {
     type: String,

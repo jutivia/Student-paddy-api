@@ -16,8 +16,8 @@ const signUp = async (req, res) => {
 }
 
 const verifyEmail = async (req, res) => {
-    const { id, uniqueString } = req.params;
-    const userVerification = await UserVerification.findOne({ userId: id });
+    const { userId, uniqueString } = req.params;
+    const userVerification = await UserVerification.findOne({ userId });
     if (!userVerification) throw new UserNotFound();
     const seconds = Math.floor(userVerification.expiresAt.getTime());
     if (Date.now() > seconds)
@@ -31,7 +31,7 @@ const verifyEmail = async (req, res) => {
         );
         if (!verify) throw new NotVerified("Wrong verification");
         const user = await User.findOneAndUpdate({
-          userId: id,
+          userId,
         }, { verified: true }, { new: true, runValidators: true });
           if (!user) throw new UserNotFound();
             res
