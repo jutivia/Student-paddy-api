@@ -12,7 +12,7 @@ const signUp = async (req, res) => {
     req.body.verified = false
     const user = await User.create(req.body)
     await user.sendMail()
-    res.status(StatusCodes.CREATED).json({user, msg: 'Verfifcation email sent'});
+    res.status(StatusCodes.CREATED).json({ msg: 'Verfifcation email sent'});
 }
 
 const verifyEmail = async (req, res) => {
@@ -56,7 +56,7 @@ const login = async (req, res) => {
     const approved = user.verified;
     if (!approved) throw new NotVerified("Email not verified");
     const token = user.createJWT()
-    res.status(StatusCodes.CREATED).json({token, msg: "user logged in successfully."})
+    res.status(StatusCodes.CREATED).json({token, id: user._id, msg: "user logged in successfully."})
 };
 
 

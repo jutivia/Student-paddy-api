@@ -7,12 +7,7 @@ const UserVerification = require('../models/userVerification')
 const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
 const { StatusCodes } = require("http-status-codes");
-const {
-  NotVerified,
-  UserNotFound,
-  UnauthenticatedError,
-  BadRequestError,
-} = require("../errors");
+
 
 const UserSchema = new mongoose.Schema(
   {
@@ -28,8 +23,8 @@ const UserSchema = new mongoose.Schema(
     username: {
       type: String,
       required: [true, "Kindly enter a username"],
-        unique: true,
-       trim: true
+      unique: true,
+      trim: true,
     },
     country: {
       type: String,
@@ -40,10 +35,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "Kindly enter a password"],
       minlength: 7,
-        },
+    },
     verified: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     firstName: {
       type: String,
@@ -57,7 +52,7 @@ const UserSchema = new mongoose.Schema(
     },
     higherInstitution: {
       type: String,
-      enums: universities.map(x=>x.name)
+      enums: universities.map((x) => x.name),
     },
     skillSet: {
       type: [String],
@@ -71,9 +66,12 @@ const UserSchema = new mongoose.Schema(
     expectedYearOfGraduation: {
       type: Number,
     },
+    yearOfGraduation: {
+      type: Number,
+    },
     communitiesFollowed: [
       {
-        ids: mongoose.Types.ObjectId,
+        id: mongoose.Types.ObjectId,
         name: String,
       },
     ],

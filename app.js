@@ -5,6 +5,8 @@ const express = require('express');
 const app = express()
 const connectDb = require('./db/connect')
 const authRoute = require('./routes/auth')
+const communityRoute = require('./routes/community')
+const updateUserRoute = require("./routes/updateUser");
 // const publicationRoute = require('./routes/publication')
 const notFound = require('./middleware/not-found')
 const errorHandler = require("./middleware/error-handler");
@@ -31,7 +33,8 @@ app.use(xss());
 
 app.use(express.json());
 app.use("/api/v1/auth", authRoute);
-// app.use("/api/v1/publications", [auth, publicationRoute])
+app.use("/api/v1/communities", [auth, communityRoute]);
+app.use("/api/v1/user", [auth, updateUserRoute]);
 
 app.use(notFound, errorHandler);
 
