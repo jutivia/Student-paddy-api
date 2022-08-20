@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
-const { countries } = require("../utils/countries");
-const { universities } = require("../utils/universities");
-const crpt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 const UserVerificationSchema = new mongoose.Schema(
   {

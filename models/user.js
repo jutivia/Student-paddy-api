@@ -7,6 +7,12 @@ const UserVerification = require('../models/userVerification')
 const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
 const { StatusCodes } = require("http-status-codes");
+const {
+  NotVerified,
+  UserNotFound,
+  UnauthenticatedError,
+  BadRequestError,
+} = require("../errors");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -98,14 +104,14 @@ UserSchema.methods.sendMail = async function () {
         pass: process.env.AUTH_APP_PASS,
       },
     });
-    const currentUrl = `https://localhost:${process.env.PORT}/api/v1`
+    const currentUrl = `https://localhost:${process.env.PORT}/api/v1/auth`
     const uniqueString = uuidv4() + this._id
 
     let mailOptions = {
       from: process.env.AUTH_Email,
       to: this.email,
       Subject: "Verify Your Email",
-      html: `,<p> Verify your email address to complete the sign up process and login into your account</p> <p>This link <b> expires in 6hours </b> </p> <p> Press <a href=${currentUrl + '/user/verify/' + this._id + '/' +uniqueString}> here to proceed </a> </p>`,
+      html: `<p> Verify your email address to complete the sign up process and login into your account</p> <p>This link <b> expires in 6hours </b> </p> <p> Press <a href=${currentUrl + '/user/verify/' + this._id + '/' +uniqueString}> here to proceed </a> </p>`,
     };
 
     const salt = await crpt.genSalt(10)
@@ -125,4 +131,5 @@ UserSchema.methods.sendMail = async function () {
           .json("Mail sending Failed")
       );
 };
+
 module.exports = mongoose.model('User', UserSchema);

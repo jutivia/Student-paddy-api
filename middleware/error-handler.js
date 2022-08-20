@@ -8,8 +8,10 @@ const errorHandler = (err,req, res, next) => {
     if (err.name === "ValidationError") customError.statusCode = StatusCodes.BAD_REQUEST
     
     if (err.name === "CastError") customError.statusCode = StatusCodes.BAD_REQUEST;
-    
-      return res.status(customError.statusCode).json({ msg: customError.msg });
+    if (err.code === 11000) customError.statusCode = StatusCodes.BAD_REQUEST;
+    // if (err.message === "Illegal arguments: string, undefined") customError.statusCode = StatusCodes.BAD_REQUEST; customError.msg = "Email-Password mismatch"
+    //   console.log(err.message);
+      return res.status(customError.statusCode).json({ msg: customError.msg })
 }
 
 module.exports = errorHandler;
