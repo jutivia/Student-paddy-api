@@ -70,9 +70,8 @@ const UserSchema = new mongoose.Schema(
     yearOfGraduation: {
       type: Number,
     },
-    communitiesFollowed: [
-        mongoose.Types.ObjectId,
-    ],
+    communitiesFollowed: [mongoose.Types.ObjectId],
+    topicsFollowed: [mongoose.Types.ObjectId]
   },
   { timestamps: true }
 );

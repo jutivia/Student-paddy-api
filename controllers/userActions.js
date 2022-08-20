@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const Community = require("../models/community");
 const User = require("../models/user");
+const Topic = require("../models/topic");
 
 const { NotFoundError, BadRequestError } = require("../errors");
 
@@ -123,5 +124,71 @@ const unfollowCommunity = async (req, res) => {
 
   res.status(StatusCodes.OK).json({ msg: "community unfollowed successfully" });
 };
+const followTopic = async (req, res) => { 
+  const { userId, topicId } = req.params;
+  const user = await User.findOne({ _id: userId });
+  if (!user) throw new NotFoundError("User not found");
+  const isFollowing = user.topicsFollowed.includes(topicId);
+  if (!isFollowing) {
+    const topic = await Community.findOne({ _id: topicId });
+    if (!topic) throw new NotFoundError("Topic not found");
+    const followers = topic.followers + 1;
+    await Topic.findOneAndUpdate(
+      { _id: topicId },
+      { followers },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    const newUserTopics = [...user.topicsFollowed, topicId]
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { topicsFollowed: newUserTopics },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  } else throw new BadRequestError("Topic followed already");
 
-module.exports = { fillUserDetails, followCommunity, unfollowCommunity };
+  res.status(StatusCodes.OK).json({ msg: "Topic followed successfully" });
+};
+
+const unfollowTopic = async (req, res) => {
+  const { userId, topicId } = req.params;
+  const user = await User.findOne({ _id: userId });
+  if (!user) throw new NotFoundError("User not found");
+  const isFollowing = user.topicsFollowed.includes(topicId);
+  if (isFollowing) {
+    const topic = await Topic.findOne({ _id: topicId });
+    if (!topic) throw new NotFoundError("Topic not found");
+    const followers = topic.followers - 1;
+    await Topic.findOneAndUpdate(
+      { _id: topicId },
+      { followers },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    const newUserTopics = user.topicsFollowed.filter((x) => x !== topicId);
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { topicsFollowed: newUserTopics },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  } else throw new BadRequestError("Topic not followed already");
+
+  res.status(StatusCodes.OK).json({ msg: "Topic unfollowed successfully" });
+};
+module.exports = {
+  fillUserDetails,
+  followCommunity,
+  unfollowCommunity,
+  followTopic,
+  unfollowTopic,
+};
