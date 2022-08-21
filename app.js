@@ -6,7 +6,7 @@ const app = express()
 const connectDb = require('./db/connect')
 const authRoute = require('./routes/auth')
 const communityRoute = require('./routes/community')
-const updateUserRoute = require("./routes/userActions");
+const userActionRoute = require("./routes/userActions");
 const postRoutes = require("./routes/post")
 const topicRoutes = require("./routes/topic");
 const commentRoutes = require("./routes/comment");
@@ -37,7 +37,7 @@ app.use(xss());
 app.use(express.json());
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/communities", [auth, communityRoute]);
-app.use("/api/v1/user", [auth, updateUserRoute]);
+app.use("/api/v1/user", [auth, userActionRoute]);
 app.use("/api/v1/posts", [auth, postRoutes]);
 app.use("/api/v1/user", [auth, userFollowRoute]);
 app.use("/api/v1/topics", [auth, topicRoutes]);

@@ -45,12 +45,13 @@ const PostSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-PostSchema.methods.getUpvotesAndDownvotes = async function (postId) {
-  const upvotes = await Upvote.find({ postId });
-  this.upvotes = upvotes.length
-  const downvotes = await Downvote.find({ postId });
-  this.downvotes = downvotes.length
-  const comments = await Comment.find({ postId });
-  this.mainComments = comments.length
+PostSchema.methods.getUpvotesAndDownvotes = async function () {
+  const upvotes = await Upvote.find({ postId: this._id });
+  this.upvotes = upvotes ? upvotes.length : 0;
+  const downvotes = await Downvote.find({ postId: this._id });
+  this.downvotes = downvotes? downvotes.length: 0
+  const comments = await Comment.find({ postId: this._id });
+  this.comments = comments ? comments.length : 0;
+  return { upvotes, downvotes, comments }
 }
 module.exports = mongoose.model("Post", PostSchema);

@@ -10,7 +10,7 @@ const errorHandler = (err,req, res, next) => {
     if (err.name === "CastError") customError.statusCode = StatusCodes.BAD_REQUEST;
     if (err.code === 11000) customError.statusCode = StatusCodes.BAD_REQUEST;
     // if (err.message === "Illegal arguments: string, undefined") customError.statusCode = StatusCodes.BAD_REQUEST; customError.msg = "Email-Password mismatch"
-    //   console.log(err.message);
+    //   console.log(err);
       return res.status(customError.statusCode).json({ msg: customError.msg })
 }
 

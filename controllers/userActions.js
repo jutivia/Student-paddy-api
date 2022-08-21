@@ -69,7 +69,7 @@ const followCommunity = async (req, res) => {
   const isFollowing = user.communitiesFollowed.includes(communityId);
   if (!isFollowing) {
        const community = await Community.findOne({ _id: communityId });
-       if (!community) throw new NotFoundError("Community not found");
+       if (!community) throw new BadRequestError("Community not found");
        const followers = community.followers + 1;
        await Community.findOneAndUpdate(
          { _id: communityId },
@@ -90,8 +90,7 @@ const followCommunity = async (req, res) => {
     );
   } else throw new BadRequestError("community followed already");
  
-  res
-    .status(StatusCodes.OK)
+  res.status(StatusCodes.OK)
     .json({ msg: "community followed successfully" });
 };
 
@@ -106,15 +105,18 @@ const unfollowCommunity = async (req, res) => {
     const followers = community.followers - 1;
     await Community.findOneAndUpdate(
       { _id: communityId },
-      { followers },
+      { followers: followers-1 },
       {
         new: true,
         runValidators: true,
       }
     );
     const newUserCommunity = user.communitiesFollowed.filter(
-      (x) => x !== communityId
+      (x) => {
+         x.toString() !== communityId;
+      }
     );
+    console.log(newUserCommunity);
     await User.findOneAndUpdate(
       { _id: req.user.userId },
       { communitiesFollowed: newUserCommunity },
