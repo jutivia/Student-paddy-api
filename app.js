@@ -9,6 +9,7 @@ const communityRoute = require('./routes/community')
 const updateUserRoute = require("./routes/userActions");
 const postRoutes = require("./routes/post")
 const topicRoutes = require("./routes/topic");
+const commentRoutes = require("./routes/comment");
 const userFollowRoute = require('./routes/user-following')
 const notFound = require('./middleware/not-found')
 const errorHandler = require("./middleware/error-handler");
@@ -39,7 +40,8 @@ app.use("/api/v1/communities", [auth, communityRoute]);
 app.use("/api/v1/user", [auth, updateUserRoute]);
 app.use("/api/v1/posts", [auth, postRoutes]);
 app.use("/api/v1/user", [auth, userFollowRoute]);
-app.use("/api/v1/topic", [auth, topicRoutes]);
+app.use("/api/v1/topics", [auth, topicRoutes]);
+app.use("/api/v1/comments", [auth, commentRoutes]);
 
 app.use(notFound, errorHandler);
 

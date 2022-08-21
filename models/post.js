@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Upvote = require("../models/upvote");
 const Downvote = require("../models/downvote");
+const Comment = require("../models/comment");
 const PostSchema = new mongoose.Schema(
   {
     topic: {
@@ -37,6 +38,10 @@ const PostSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    comments: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
@@ -45,5 +50,7 @@ PostSchema.methods.getUpvotesAndDownvotes = async function (postId) {
   this.upvotes = upvotes.length
   const downvotes = await Downvote.find({ postId });
   this.downvotes = downvotes.length
+  const comments = await Comment.find({ postId });
+  this.mainComments = comments.length
 }
 module.exports = mongoose.model("Post", PostSchema);

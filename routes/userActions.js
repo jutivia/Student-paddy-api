@@ -8,11 +8,11 @@ const {
   followTopic,
   unfollowTopic,
 } = require("../controllers/userActions");
-router.post("/:userId", fillUserDetails);
-router.route("/:userId/community/follow/:communityId").patch(followCommunity);
-router.route("/:userId/community/unfollow/:communityId").patch(unfollowCommunity);
-router.route("/:userId/topic/follow/:topicId").patch(followTopic);
-router.route("/:userId/topic/unfollow/:topicId").patch(unfollowTopic);
+router.post("/", fillUserDetails);
+router.route("/community/follow/:communityId").patch(followCommunity);
+router.route("/community/unfollow/:communityId").patch(unfollowCommunity);
+router.route("/topic/follow/:topicId").patch(followTopic);
+router.route("/topic/unfollow/:topicId").patch(unfollowTopic);
 
 
 module.exports = router;

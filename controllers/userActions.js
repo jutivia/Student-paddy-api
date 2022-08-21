@@ -18,7 +18,6 @@ const fillUserDetails = async (req, res) => {
     yearOfGraduation,
     communitiesFollowed,
   } = req.body;
-  const { userId } = req.params;
   if (!firstName && !lastName)
     throw new BadRequestError("Kindly enter your first and last names");
   if (!academicStatus)
@@ -49,10 +48,14 @@ const fillUserDetails = async (req, res) => {
       }
     );
   });
-  const updatedUser = await User.findOneAndUpdate({ _id: userId }, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const updatedUser = await User.findOneAndUpdate(
+    { _id: req.user.userId },
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
     if (!updatedUser) throw new NotFoundError("User not found");
       res
         .status(StatusCodes.CREATED)
@@ -60,8 +63,8 @@ const fillUserDetails = async (req, res) => {
 };
 
 const followCommunity = async (req, res) => {
-  const { userId, communityId } = req.params;
-  const user = await User.findOne({ _id: userId });
+  const { communityId } = req.params;
+  const user = await User.findOne({ _id: req.user.userId });
   if (!user) throw new NotFoundError("User not found");
   const isFollowing = user.communitiesFollowed.includes(communityId);
   if (!isFollowing) {
@@ -78,7 +81,7 @@ const followCommunity = async (req, res) => {
        );
     const newUserCommunity = [...user.communitiesFollowed, communityId];
     await User.findOneAndUpdate(
-      { _id: userId },
+      { _id: req.user.userId },
       { communitiesFollowed: newUserCommunity },
       {
         new: true,
@@ -93,8 +96,8 @@ const followCommunity = async (req, res) => {
 };
 
 const unfollowCommunity = async (req, res) => {
-  const { userId, communityId } = req.params;
-  const user = await User.findOne({ _id: userId });
+  const { communityId } = req.params;
+  const user = await User.findOne({ _id: req.user.userId });
   if (!user) throw new NotFoundError("User not found");
   const isFollowing = user.communitiesFollowed.includes(communityId);
   if (isFollowing) {
@@ -113,7 +116,7 @@ const unfollowCommunity = async (req, res) => {
       (x) => x !== communityId
     );
     await User.findOneAndUpdate(
-      { _id: userId },
+      { _id: req.user.userId },
       { communitiesFollowed: newUserCommunity },
       {
         new: true,
@@ -125,8 +128,8 @@ const unfollowCommunity = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "community unfollowed successfully" });
 };
 const followTopic = async (req, res) => { 
-  const { userId, topicId } = req.params;
-  const user = await User.findOne({ _id: userId });
+  const {  topicId } = req.params;
+  const user = await User.findOne({ _id: req.user.userId });
   if (!user) throw new NotFoundError("User not found");
   const isFollowing = user.topicsFollowed.includes(topicId);
   if (!isFollowing) {
@@ -143,7 +146,7 @@ const followTopic = async (req, res) => {
     );
     const newUserTopics = [...user.topicsFollowed, topicId]
     await User.findOneAndUpdate(
-      { _id: userId },
+      { _id: req.user.userId },
       { topicsFollowed: newUserTopics },
       {
         new: true,
@@ -156,8 +159,8 @@ const followTopic = async (req, res) => {
 };
 
 const unfollowTopic = async (req, res) => {
-  const { userId, topicId } = req.params;
-  const user = await User.findOne({ _id: userId });
+  const {  topicId } = req.params;
+  const user = await User.findOne({ _id: req.user.userId });
   if (!user) throw new NotFoundError("User not found");
   const isFollowing = user.topicsFollowed.includes(topicId);
   if (isFollowing) {
@@ -174,7 +177,7 @@ const unfollowTopic = async (req, res) => {
     );
     const newUserTopics = user.topicsFollowed.filter((x) => x !== topicId);
     await User.findOneAndUpdate(
-      { _id: userId },
+      { _id: req.user.userId },
       { topicsFollowed: newUserTopics },
       {
         new: true,

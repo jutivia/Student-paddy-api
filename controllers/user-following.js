@@ -4,14 +4,17 @@ const { StatusCodes } = require("http-status-codes");
 const { NotFoundError, BadRequestError } = require('../errors')
 
 const followUser = async (req, res) => {
-    const { userId, followingId } = req.params;
-    const follow = await FollowUser.findOne({ userId, followingId });
+    const { followingId } = req.params;
+    const follow = await FollowUser.findOne({
+      userId: req.user.userId,
+      followingId,
+    });
     if (!follow) {
         const user = await User.findOne({ _id: followingId });
         if (!user) throw new NotFoundError(" Followee not found ")
         const fullName = `${user.firstName} ${user.lastName}`
         await FollowUser.create({
-          userId,
+          userId: req.user.userId,
           followingId,
           nameOfFollowed: fullName,
           profilePic: user.img,
@@ -21,22 +24,26 @@ const followUser = async (req, res) => {
 }
 
 const unFollowUser = async (req, res) => {
-    const { userId, followingId } = req.params;
-    const follow = await FollowUser.findOne({ userId, followingId });
+    const { followingId } = req.params;
+    const follow = await FollowUser.findOne({
+      userId: req.user.userId,
+      followingId,
+    });
     if (follow) {
-      await FollowUser.findOneAndDelete({ userId, followingId });
+      await FollowUser.findOneAndDelete({
+        userId: req.user.userId,
+        followingId,
+      });
       res.status(StatusCodes.OK).json({ msg: "user unfollowed successfully" });
     } else throw new BadRequestError("User unfollowed already");
 }
 
 const getAllFollowersForUser = async (req, res) => {
-    const { userId } = req.params;
-    const followers = await FollowUser.find({ followingId: userId });
+    const followers = await FollowUser.find({ followingId: req.user.userId });
     res.status(StatusCodes.OK).json({ followers });
 }
 const getAllFollowingsForUser = async (req, res) => {
-  const { userId } = req.params;
-  const followings = await FollowUser.find({ userId });
+  const followings = await FollowUser.find({ userId: req.user.userId });
   res.status(StatusCodes.OK).json({ followings });
 };
 module.exports = {

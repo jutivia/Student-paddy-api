@@ -13,7 +13,6 @@ const Downvote = require("../models/downvote");
 const Repost = require("../models/repost");
 
 const createPost = async (req, res) => {
-    const {userId} = req.params
     const { topic, type, content, file, community } = req.body;
     if (type === 'file' ) {
         if (!file) throw new BadRequestError("Kindly input a file")
@@ -36,7 +35,7 @@ const createPost = async (req, res) => {
           }
         );
     }
-    req.body.createdBy = userId;
+    req.body.createdBy = req.user.userId;
     const post = await PostSchema.create(req.body)
     res.status(StatusCodes.CREATED).json({post, msg: 'Post created succesfully'});
 
@@ -87,36 +86,39 @@ const deletePost = async (req, res) => {
 };
 
 const UpvoteAPost = async (req, res) => {
-  const { userId, postId } = req.params
-  const upvoteExists = Upvote.findOne({ userId, postId });
+  const { postId } = req.params
+  const upvoteExists = Upvote.findOne({ userId: req.user.userId, postId });
   if (upvoteExists) throw new BadRequestError('Post upvoted by user already');
-  Upvote.create({ userId, postId });
+  Upvote.create({ userId: req.user.userId, postId });
   res.status(StatusCodes.OK).json({ msg: "Post upvote added succesfully" });
 };
 const RemoveUpvoteOnAPost = async (req, res) => {
-  const { userId, postId } = req.params;
-  const upvoteExists = Upvote.findOne({ userId, postId });
+  const { postId } = req.params;
+  const upvoteExists = Upvote.findOne({ userId: req.user.userId, postId });
   if (!upvoteExists) throw new BadRequestError("Post not upvoted by user already");
-  Upvote.findOneAndDelete({ userId, postId });
+  Upvote.findOneAndDelete({ userId: req.user.userId, postId });
   res.status(StatusCodes.OK).json({ msg: "Post upvote removed succesfully" });
 };
 
 const DownvoteAPost = async (req, res) => {
-   const { userId, postId } = req.params;
-   const downvoteExists = Downvote.findOne({ userId, postId });
+   const { postId } = req.params;
+   const downvoteExists = Downvote.findOne({ userId: req.user.userId, postId });
    if (downvoteExists)
      throw new BadRequestError("Post downvoted by user already");
-   Downvote.create({ userId, postId });
+   Downvote.create({ userId: req.user.userId, postId });
    res
      .status(StatusCodes.OK)
      .json({ msg: "Post downvote added succesfully" });
 };
 const RemoveDownvoteOnAPost = async (req, res) => {
-     const { userId, postId } = req.params;
-     const downvoteExists = Downvote.findOne({ userId, postId });
+     const { postId } = req.params;
+     const downvoteExists = Downvote.findOne({
+       userId: req.user.userId,
+       postId,
+     });
      if (!downvoteExists)
        throw new BadRequestError("Post not downvoted by user already");
-     Downvote.findOneAndDelete({ userId, postId });
+     Downvote.findOneAndDelete({ userId: req.user.userId, postId });
      res
        .status(StatusCodes.OK)
        .json({ msg: "Post downvote removed succesfully" });

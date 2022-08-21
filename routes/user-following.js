@@ -8,9 +8,9 @@ const {
   getAllFollowingsForUser,
 } = require("../controllers/user-following");
 
-router.post("/:userId/follow/:followingId", followUser);
-router.delete("/:userId/unfollow/:followingId", unFollowUser);
-router.get("/:userId/followers", getAllFollowersForUser);
-router.get("/:userId/following", getAllFollowingsForUser);
+router.post("/follow/:followingId", followUser);
+router.delete("/unfollow/:followingId", unFollowUser);
+router.get("/followers", getAllFollowersForUser);
+router.get("/following", getAllFollowingsForUser);
 
 module.exports = router;
