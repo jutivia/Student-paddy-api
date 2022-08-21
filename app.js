@@ -8,7 +8,8 @@ const authRoute = require('./routes/auth')
 const communityRoute = require('./routes/community')
 const updateUserRoute = require("./routes/userActions");
 const postRoutes = require("./routes/post")
-// const publicationRoute = require('./routes/publication')
+const topicRoutes = require("./routes/topic");
+const userFollowRoute = require('./routes/user-following')
 const notFound = require('./middleware/not-found')
 const errorHandler = require("./middleware/error-handler");
 const auth = require("./middleware/authentication");
@@ -37,6 +38,8 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/communities", [auth, communityRoute]);
 app.use("/api/v1/user", [auth, updateUserRoute]);
 app.use("/api/v1/posts", [auth, postRoutes]);
+app.use("/api/v1/user", [auth, userFollowRoute]);
+app.use("/api/v1/topic", [auth, topicRoutes]);
 
 app.use(notFound, errorHandler);
 

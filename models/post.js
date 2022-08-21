@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-
+const Upvote = require("../models/upvote");
+const Downvote = require("../models/downvote");
 const PostSchema = new mongoose.Schema(
   {
     topic: {
@@ -39,5 +40,10 @@ const PostSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+PostSchema.methods.getUpvotesAndDownvotes = async function (postId) {
+  const upvotes = await Upvote.find({ postId });
+  this.upvotes = upvotes.length
+  const downvotes = await Downvote.find({ postId });
+  this.downvotes = downvotes.length
+}
 module.exports = mongoose.model("Post", PostSchema);
