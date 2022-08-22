@@ -116,7 +116,6 @@ const unfollowCommunity = async (req, res) => {
          x.toString() !== communityId;
       }
     );
-    console.log(newUserCommunity);
     await User.findOneAndUpdate(
       { _id: req.user.userId },
       { communitiesFollowed: newUserCommunity },
