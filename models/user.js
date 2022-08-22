@@ -4,6 +4,7 @@ const {universities} = require('../utils/universities')
 const crpt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const UserVerification = require('../models/userVerification')
+const FollowUser = require("../models/user-following");
 const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
 const { StatusCodes } = require("http-status-codes");
@@ -70,6 +71,12 @@ const UserSchema = new mongoose.Schema(
     yearOfGraduation: {
       type: Number,
     },
+    followers: {
+      type: Number,
+    },
+    followings: {
+      type: Number,
+    },
     communitiesFollowed: [mongoose.Types.ObjectId],
     topicsFollowed: [mongoose.Types.ObjectId]
   },
@@ -90,6 +97,12 @@ UserSchema.methods.createJWT = function () {
         }
     )
 }
+UserSchema.methods.getFollowings = async function () {
+  const followers = await FollowUser.find({ followingId: this._id });
+  const followings = await FollowUser.find({ userId: this._id });
+  this.followers = followers.length
+  this.followings = followings.length
+}
 
 UserSchema.methods.sendMail = async function () {
     let transporter = nodemailer.createTransport({
@@ -101,7 +114,6 @@ UserSchema.methods.sendMail = async function () {
     });
     const currentUrl = `https://localhost:${process.env.PORT}/api/v1/auth`
     const uniqueString = uuidv4() + this._id
-
     let mailOptions = {
       from: process.env.AUTH_Email,
       to: this.email,

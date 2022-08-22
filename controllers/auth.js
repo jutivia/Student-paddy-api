@@ -16,7 +16,7 @@ const signUp = async (req, res) => {
 }
 
 const verifyEmail = async (req, res) => {
-    const { userId, uniqueString } = req.params;
+  const { userId, uniqueString } = req.params;
     const userVerification = await UserVerification.findOne({ userId });
     if (!userVerification) throw new UserNotFound();
     const seconds = Math.floor(userVerification.expiresAt.getTime());
@@ -31,9 +31,9 @@ const verifyEmail = async (req, res) => {
         );
         if (!verify) throw new NotVerified("Wrong verification");
         const user = await User.findOneAndUpdate({
-          userId,
+          _id: userId,
         }, { verified: true }, { new: true, runValidators: true });
-          if (!user) throw new UserNotFound();
+        if (!user) throw new UserNotFound();
             res
               .status(StatusCodes.ACCEPTED)
               .json("Email verfified successfully");
@@ -47,7 +47,8 @@ const login = async (req, res) => {
       throw new BadRequestError("provide an email ");
     if (!password)
         throw new BadRequestError("Provide a  password")
-    const user = await User.findOne({ email })
+  const user = await User.findOne({ email })
+   console.log(user);
     if (!user) {
         throw new UnauthenticatedError("Invalid Credentials")
     }

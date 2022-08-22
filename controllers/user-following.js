@@ -39,12 +39,12 @@ const unFollowUser = async (req, res) => {
 }
 
 const getAllFollowersForUser = async (req, res) => {
-    const followers = await FollowUser.find({ followingId: req.user.userId });
-    res.status(StatusCodes.OK).json({ followers });
+    const followers = await FollowUser.find({ followingId: req.user.userId })
+    res.status(StatusCodes.OK).json({ length: followers.length, followers })
 }
 const getAllFollowingsForUser = async (req, res) => {
-  const followings = await FollowUser.find({ userId: req.user.userId });
-  res.status(StatusCodes.OK).json({ followings });
+  const followings = await FollowUser.find({ userId: req.user.userId })
+  res.status(StatusCodes.OK).json({ length: followings.length,  followings })
 };
 module.exports = {
   followUser,

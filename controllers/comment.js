@@ -23,7 +23,7 @@ const createComment = async (req, res) => {
       },
       childrenComents: 0
     });
-    res.status(StatusCodes.Created).json({msg: 'comment created successfully'})
+    res.status(StatusCodes.CREATED).json({msg: 'comment created successfully'})
 }
 
 const createSubComment = async (req, res) => {
@@ -45,31 +45,31 @@ const createSubComment = async (req, res) => {
       userId: user._id,
     },
   })
+  const parentComment = await Comment.findOne({ _id: commentId });
   await Comment.findOneAndUpdate(
-    { parentId: commentId },
-    { childrenComents: childrenComents + 1 },
+    { _id: commentId },
+    { childrenComents: parentComment.childrenComents + 1 },
     {
       new: true,
       runValidators: true,
     }
   );
-  res
-       .status(StatusCodes.Created)
+  res.status(StatusCodes.CREATED)
        .json({ msg: "comment created successfully" });
 };
 
-const getMainComments = (req, res) => {
+const getMainComments = async (req, res) => {
     const {postId} = req.params
-    const comments = Comment.find({ postId })
-    res
-      .status(StatusCodes.OK)
+    const comments = await Comment.find({ postId })
+    res.status(StatusCodes.OK)
       .json({ length: comments.length, comments});
 }
-const getSubComments = (req, res) => {
+const getSubComments = async (req, res) => {
     const { postId, commentId } = req.params;
-    const comments = Comment.find({ postId, parentId: commentId });
+    const comments = await Comment.find({ postId, parentId: commentId });
     res.status(StatusCodes.OK).json({ length: comments.length, comments });
 };
+
 module.exports = {
   createComment,
   createSubComment,

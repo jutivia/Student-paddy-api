@@ -135,7 +135,7 @@ const followTopic = async (req, res) => {
   if (!user) throw new NotFoundError("User not found");
   const isFollowing = user.topicsFollowed.includes(topicId);
   if (!isFollowing) {
-    const topic = await Community.findOne({ _id: topicId });
+    const topic = await Topic.findOne({ _id: topicId });
     if (!topic) throw new NotFoundError("Topic not found");
     const followers = topic.followers + 1;
     await Topic.findOneAndUpdate(
@@ -177,7 +177,7 @@ const unfollowTopic = async (req, res) => {
         runValidators: true,
       }
     );
-    const newUserTopics = user.topicsFollowed.filter((x) => x !== topicId);
+    const newUserTopics = user.topicsFollowed.filter((x) => x.toString() !== topicId);
     await User.findOneAndUpdate(
       { _id: req.user.userId },
       { topicsFollowed: newUserTopics },
@@ -190,10 +190,28 @@ const unfollowTopic = async (req, res) => {
 
   res.status(StatusCodes.OK).json({ msg: "Topic unfollowed successfully" });
 };
+
+const getSingleUser = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.userId })
+  if (!user) throw new NotFoundError("User not found")
+  await user.getFollowings()
+  res.status(StatusCodes.OK).json({ user })
+}
+const getAllusers = async (req, res) => {
+  const users = await User.find({});
+  let allUsers = [];
+  for (let i = 0; i < users.length; i++) {
+   await users[i].getFollowings();
+    allUsers.push(users[i])
+  }
+  res.status(StatusCodes.OK).json({ allUsers });
+}
 module.exports = {
   fillUserDetails,
   followCommunity,
   unfollowCommunity,
   followTopic,
   unfollowTopic,
+  getSingleUser,
+  getAllusers,
 };
