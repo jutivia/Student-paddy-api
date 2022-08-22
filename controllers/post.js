@@ -35,7 +35,7 @@ const createPost = async (req, res) => {
           }
         );
     }
-    req.body.createdBy = req.user.userId;
+  req.body.createdBy = req.user.userId;
     const post = await PostSchema.create(req.body)
     res.status(StatusCodes.CREATED).json({post, msg: 'Post created succesfully'});
 
@@ -104,6 +104,11 @@ const deletePost = async (req, res) => {
   const { postId } = req.params;
   const post = await PostSchema.findOneAndDelete({ _id: postId });
   if (!post) throw new NotFoundError("Post not found");
+  const topic = await TopicSchema.findOne({ name: post.topic })
+  if (topic) await TopicSchema.findOneAndUpdate(
+    { name: post.topic },
+    { contributions: topic.contributions - 1 }
+  );
   res.status(StatusCodes.OK).json({ msg: "Post deleted succesfully" });
 };
 

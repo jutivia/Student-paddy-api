@@ -5,12 +5,14 @@ const {
   getAllTopics,
   getAllPostsUnderATopic,
   getAllQuestionsUnderATopic,
+  getAllResourcesUnderATopic,
   getAllcontributorsUnderATopic,
 } = require("../controllers/topic");
 
-router.post("/", getAllTopics);
-router.delete("/topic/posts", getAllPostsUnderATopic);
-router.get("/topic/questions", getAllQuestionsUnderATopic);
-router.get("/topic/contributors", getAllcontributorsUnderATopic);
+router.get("/", getAllTopics);
+router.get("/posts", getAllPostsUnderATopic);
+router.get("/questions", getAllQuestionsUnderATopic);
+router.get("/resources", getAllResourcesUnderATopic);
+router.get("/contributors", getAllcontributorsUnderATopic);
 
 module.exports = router;
