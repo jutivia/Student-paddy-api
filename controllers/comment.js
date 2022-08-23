@@ -60,7 +60,7 @@ const createSubComment = async (req, res) => {
 
 const getMainComments = async (req, res) => {
     const {postId} = req.params
-    const comments = await Comment.find({ postId })
+    const comments = await Comment.find({ postId, hasParent: false });
     res.status(StatusCodes.OK)
       .json({ length: comments.length, comments});
 }
