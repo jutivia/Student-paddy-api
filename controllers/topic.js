@@ -18,7 +18,8 @@ const getAllTopics = async (req, res) => {
 }
 
 const getAllPostsUnderATopic = async (req, res) => {
-    const {topic} = req.body
+  const { topic } = req.body
+  if (!topic) throw new BadRequestError("Enter a topic")
   const existingPosts = await Post.find({ topic, type: "post" });
   let posts = [];
   for (let i = 0; i < existingPosts.length; i++) {
@@ -30,6 +31,7 @@ const getAllPostsUnderATopic = async (req, res) => {
 
 const getAllQuestionsUnderATopic = async (req, res) => {
   const { topic } = req.body;
+  if (!topic) throw new BadRequestError("Enter a topic");
   const existingPosts = await Post.find({ type: "question", topic });
   let posts = [];
   for (let i = 0; i < existingPosts.length; i++) {
@@ -40,6 +42,7 @@ const getAllQuestionsUnderATopic = async (req, res) => {
 };
 const getAllResourcesUnderATopic = async (req, res) => {
   const { topic } = req.body;
+  if (!topic) throw new BadRequestError("Enter a topic");
   const existingPosts = await Post.find({
     type: { $in: ["link", "file"] },
     topic,
