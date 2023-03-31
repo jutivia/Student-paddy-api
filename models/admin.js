@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const { StatusCodes } = require("http-status-codes");
 const validator = require("validator");
 
-const UserSchema = new mongoose.Schema(
+const AdminSchema = new mongoose.Schema(
   {
     email: {
       type: String,
@@ -15,6 +15,11 @@ const UserSchema = new mongoose.Schema(
       lowerCase: true,
       validate: [validator.isEmail, "Please provide a valid email"],
       unique: true,
+    },
+    type: {
+      type: String,
+      enums: ["super_admin", "admin"],
+      required: [true, "Choose an admin type"],
     },
     username: {
       type: String,
@@ -27,7 +32,7 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Kindly enter a password"],
       validate: [
         validator.isStrongPassword,
-        "Password must contain at least one uppercase letter, one lowercase letter and one number",
+        "Password must contain at least one uppercase letter, one lowercase letter, one special symbol and one number",
       ],
     },
     confirmPassword: {
@@ -48,13 +53,13 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-UserSchema .pre("save", async function () {
+AdminSchema.pre("save", async function () {
   const salt = await crpt.genSalt(10);
   this.password = await crpt.hash(this.password, salt);
   this.confirmPassword = undefined
 });
 
-UserSchema.methods.createJWT = function () {
+AdminSchema.methods.createJWT = function () {
   return jwt.sign(
     {
       userId: this._id,
@@ -67,7 +72,8 @@ UserSchema.methods.createJWT = function () {
   );
 };
 
-UserSchema.methods.sendMail = async function () {
+
+AdminSchema.methods.sendAdminMail = async function () {
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -80,10 +86,10 @@ UserSchema.methods.sendMail = async function () {
   let mailOptions = {
     from: process.env.AUTH_Email,
     to: this.email,
-    Subject: "Verify Your Email",
-    html: `<p> Verify your email address to complete the sign up process and login into your account</p> <p>This link <b> expires in 6hours </b> </p> <p> Press <a href=${
-      currentUrl + "/user/verify/" + this._id + "/" + uniqueString
-    }> here to proceed </a> </p>`,
+    Subject: "Accept Admin Invite",
+    html: `<p> This invite has been sent from Onome Food Mart to invite you to become an admin</p> <p>Click the link below to activate your account with your email </p> <p>This invite <b> expires in 24hours </b> </p> <p> Press <a href=${
+      currentUrl + "/admin/verify/" + this._id + "/" + uniqueString
+    }> here to proceed </a> </p> <p>Your default password to login with is 'password'</p>`,
   };
 
   const salt = await crpt.genSalt(10);
@@ -105,35 +111,34 @@ UserSchema.methods.sendMail = async function () {
     );
 };
 
-UserSchema.methods.sendResetPasswordToken = async function () {
-  let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.AUTH_EMAIL,
-      pass: process.env.AUTH_APP_PASS,
-    },
-  });
-  const currentUrl = `https://localhost:${process.env.PORT}/api/v1/auth`;
-  const uniqueString = uuidv4();
-  let mailOptions = {
-    from: process.env.AUTH_Email,
-    to: this.email,
-    Subject: "Reset Password",
-    html: `<p> You've requested to reset your password</p> <p>Click the link below to reset your password </p> <p>This link <b> expires in 30 minutes </b> </p> <p> Press <a href=${
-      currentUrl + "/reset-password/" + this._id + "/" + uniqueString
-    }> to reset your password</p>`,
+AdminSchema.methods.sendResetPasswordToken = async function () {
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.AUTH_EMAIL,
+        pass: process.env.AUTH_APP_PASS,
+      },
+    });
+    const currentUrl = `https://localhost:${process.env.PORT}/api/v1/auth`;
+    const uniqueString = uuidv4();
+    let mailOptions = {
+      from: process.env.AUTH_Email,
+      to: this.email,
+      Subject: "Reset Password",
+      html: `<p> You've requested to reset your password</p> <p>Click the link below to reset your password </p> <p>This link <b> expires in 30 minutes </b> </p> <p> Press <a href=${
+        currentUrl + "/admin/reset-password/" + this._id + "/" + uniqueString
+      }> to reset your password</p>`,
+    };
+  
+    const salt = await crpt.genSalt(10);
+    const hash = await crpt.hash(uniqueString, salt);
+   this.passwordResetToken = hash
+   this.passwordResetExpires =  Date.now() + 60*30
+    transporter
+      .sendMail(mailOptions)
+      .catch((err) =>
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json("Mail sending Failed")
+      );
   };
 
-  const salt = await crpt.genSalt(10);
-  const hash = await crpt.hash(uniqueString, salt);
- this.passwordResetToken = hash
- this.passwordResetExpires =  Date.now() + 60*30
-  transporter
-    .sendMail(mailOptions)
-    .catch((err) =>
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json("Mail sending Failed")
-    );
-};
-
-
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("Admin", AdminSchema);
